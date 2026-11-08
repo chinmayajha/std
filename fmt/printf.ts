@@ -714,7 +714,15 @@ class Printf {
     if (special !== "") {
       return special;
     }
+    return this.padNum(this.formatExponent(n, upcase), n < 0);
+  }
 
+  /**
+   * Format the absolute value of a finite number in style e, without padding
+   * @param n
+   * @param upcase
+   */
+  formatExponent(n: number, upcase: boolean): string {
     const m = n.toExponential().match(FLOAT_REGEXP);
     if (!m) {
       throw new Error(
@@ -743,8 +751,7 @@ class Printf {
       }
     }
     e = e.length === 1 ? "0" + e : e;
-    const val = `${mantissa}.${fractional}${upcase ? "E" : "e"}${esign}${e}`;
-    return this.padNum(val, n < 0);
+    return `${mantissa}.${fractional}${upcase ? "E" : "e"}${esign}${e}`;
   }
 
   /**
@@ -756,7 +763,14 @@ class Printf {
     if (special !== "") {
       return special;
     }
+    return this.padNum(this.formatFixed(n), n < 0);
+  }
 
+  /**
+   * Format the absolute value of a finite number in style f, without padding
+   * @param n
+   */
+  formatFixed(n: number): string {
     // stupid helper that turns a number into a (potentially)
     // VERY long string.
     function expandNumber(n: number): string {
@@ -793,7 +807,7 @@ class Printf {
     if (round) {
       dig = (parseInt(dig) + 1).toString();
     }
-    return this.padNum(`${dig}.${fractional}`, n < 0);
+    return `${dig}.${fractional}`;
   }
 
   /**
@@ -846,18 +860,18 @@ class Printf {
     let nStr = "";
     if (p > X && X >= -4) {
       this.flags.precision = p - (X + 1);
-      nStr = this.fmtFloatF(n);
+      nStr = this.formatFixed(n);
       if (!this.flags.sharp) {
         nStr = nStr.replace(/\.?0*$/, "");
       }
     } else {
       this.flags.precision = p - 1;
-      nStr = this.fmtFloatE(n);
+      nStr = this.formatExponent(n, upcase);
       if (!this.flags.sharp) {
-        nStr = nStr.replace(/\.?0*e/, upcase ? "E" : "e");
+        nStr = nStr.replace(/\.?0*([eE])/, "$1");
       }
     }
-    return nStr;
+    return this.padNum(nStr, n < 0);
   }
 
   /**

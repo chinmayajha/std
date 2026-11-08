@@ -113,6 +113,19 @@ Deno.test("sprintf() handles floats", function () {
   assertEquals(sprintf("%.3e", 999999), "1.000e+06");
   assertEquals(sprintf("%.3e", 0.000099999), "1.000e-04");
 });
+Deno.test("sprintf() pads %g and %G to the width", function () {
+  assertEquals(sprintf("%5g", 100), "  100");
+  assertEquals(sprintf("%12G", 100), "         100");
+  assertEquals(sprintf("%-6g|", 1.5), "1.5   |");
+  assertEquals(sprintf("%-12.1G|", 100), "1E+02       |");
+  assertEquals(sprintf("%05g", 0), "00000");
+  assertEquals(sprintf("%+07g", -1.5), "-0001.5");
+  assertEquals(sprintf("%0 12G", 99.995), " 0000099.995");
+});
+Deno.test("sprintf() keeps %G upper case with the sharp flag", function () {
+  assertEquals(sprintf("%#G", 1e-7), "1.00000E-07");
+  assertEquals(sprintf("%# 12.3G", 1e-7), "    1.00E-07");
+});
 Deno.test("sprintf() handles floatE", function () {
   assertEquals(sprintf("%E", 4), "4.000000E+00");
   assertEquals(sprintf("%E", -4), "-4.000000E+00");
