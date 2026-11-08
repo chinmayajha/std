@@ -714,7 +714,9 @@ class Printf {
     if (special !== "") {
       return special;
     }
-    return this.padNum(this.formatExponent(n, upcase), n < 0);
+    let val = this.formatExponent(n, upcase);
+    if (!this.flags.sharp) val = val.replace(/\.(?=[eE])/, "");
+    return this.padNum(val, n < 0);
   }
 
   /**
@@ -763,7 +765,9 @@ class Printf {
     if (special !== "") {
       return special;
     }
-    return this.padNum(this.formatFixed(n), n < 0);
+    let val = this.formatFixed(n);
+    if (!this.flags.sharp) val = val.replace(/\.$/, "");
+    return this.padNum(val, n < 0);
   }
 
   /**

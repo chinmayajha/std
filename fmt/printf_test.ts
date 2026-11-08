@@ -126,6 +126,14 @@ Deno.test("sprintf() keeps %G upper case with the sharp flag", function () {
   assertEquals(sprintf("%#G", 1e-7), "1.00000E-07");
   assertEquals(sprintf("%# 12.3G", 1e-7), "    1.00E-07");
 });
+Deno.test("sprintf() drops the decimal point for precision 0 without the sharp flag", function () {
+  assertEquals(sprintf("%.0f", 123), "123");
+  assertEquals(sprintf("%5.0F", -7), "   -7");
+  assertEquals(sprintf("%.0e", 123), "1e+02");
+  assertEquals(sprintf("%-8.0E|", 0), "0E+00   |");
+  assertEquals(sprintf("%#.0f", 123), "123.");
+  assertEquals(sprintf("%#.0e", 123), "1.e+02");
+});
 Deno.test("sprintf() handles floatE", function () {
   assertEquals(sprintf("%E", 4), "4.000000E+00");
   assertEquals(sprintf("%E", -4), "-4.000000E+00");
